@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: auth-service
+
+jwt:
+  secret: yourSecretKeyHereMustBeAdsdsdsdtLeast32CharsLongForSecurity111111dsdsdsdsdsdsdsdsdsds111
+  expirationMs: 3600000
