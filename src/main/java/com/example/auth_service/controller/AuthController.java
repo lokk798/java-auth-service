@@ -34,6 +34,12 @@ public class AuthController {
         return ResponseEntity.badRequest().body("Invalid username or password");
     }
 
+    @PostMapping("auth/logout")
+    public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest){
+        userService.recordLogout(logoutRequest.getUsername());
+        return ResponseEntity.ok("Logout successful");
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -47,6 +53,14 @@ public class AuthController {
     @NoArgsConstructor
     static class AuthResponse{
         private String token;
+    }
+
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class LogoutRequest{
+        private String username;
     }
 
 }

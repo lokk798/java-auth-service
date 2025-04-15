@@ -1,27 +1,44 @@
 package com.example.auth_service.service;
 
 import com.example.auth_service.model.User;
+import com.example.auth_service.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+
 
 @Service
 public class UserService {
-    private final Map<String, User> users = new HashMap();
 
-    public UserService(){
-        users.put("admin", new User("admin", "password", Arrays.asList("ROLE_ADMIN", "ROLE_USER")));
-        users.put("user", new User("user", "password", Arrays.asList("ROLE_USER")) ); // can't change list
-    }
+    @Autowired
+    private UserRepository userRepository;
 
-    public User findByUsername(String username) {
-        return (User) users.get(username);
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 
     public boolean validateCredentials(String username, String password) {
         User user = findByUsername(username);
-        return user != null && user.getPassword().equals(password);
+        if(user != null && user.getPassword().equals(password)){
+            // update login metadata
+            user.setLastLogin(LocalDateTime.now());
+            user.setLoginCount(user.getLoginCount() + 1);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    public void recordLogout(String username){
+        User user = findByUsername(username);
+        if(user != null){
+            user.setLastLogout(LocalDateTime.now());
+            userRepository.save(user);
+        }
+    }
+
+    public void saveUser(User user){
+        userRepository.save(user);
     }
 }
